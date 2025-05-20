@@ -3,36 +3,35 @@
 namespace App\Entity;
 
 use App\Repository\TaskRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]//autoincrement
+    #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
     private ?string $title = null;
 
-    #[ORM\Column(length: 255)]
-    private ?string $content = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTime $due_date = null;
 
     #[ORM\Column]
     private ?\DateTime $created_at = null;
 
+    #[ORM\Column]
+    private ?\DateTime $updated_at = null;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getTitle(): ?string
@@ -47,14 +46,26 @@ class Task
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getDescription(): ?string
     {
-        return $this->content;
+        return $this->description;
     }
 
-    public function setContent(string $content): static
+    public function setDescription(string $description): static
     {
-        $this->content = $content;
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getDueDate(): ?\DateTime
+    {
+        return $this->due_date;
+    }
+
+    public function setDueDate(?\DateTime $due_date): static
+    {
+        $this->due_date = $due_date;
 
         return $this;
     }
@@ -67,6 +78,18 @@ class Task
     public function setCreatedAt(\DateTime $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updated_at;
+    }
+
+    public function setUpdatedAt(\DateTime $updated_at): static
+    {
+        $this->updated_at = $updated_at;
 
         return $this;
     }
