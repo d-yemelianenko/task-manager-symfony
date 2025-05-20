@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TaskRepository;
+use App\Repository\TaskStatusRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -28,6 +29,10 @@ class Task
 
     #[ORM\Column]
     private ?\DateTime $updated_at = null;
+
+    #[ORM\ManyToOne(targetEntity: TaskStatus::class, inversedBy: 'tasks')]
+    #[ORM\JoinColumn(name: 'task_status_id', referencedColumnName: 'id')]
+    private TaskStatus $status;
 
     public function getId(): ?int
     {
@@ -90,6 +95,17 @@ class Task
     public function setUpdatedAt(\DateTime $updated_at): static
     {
         $this->updated_at = $updated_at;
+
+        return $this;
+    }
+    public function getStatus(): ?TaskStatus
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?TaskStatus $status): static
+    {
+        $this->status = $status;
 
         return $this;
     }
