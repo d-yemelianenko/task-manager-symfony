@@ -5,9 +5,13 @@ namespace App\Entity;
 use App\Repository\TaskRepository;
 use App\Repository\TaskStatusRepository;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\PrePersist;
+use Doctrine\ORM\Mapping\PreUpdate;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
+#[HasLifecycleCallbacks]
 class Task
 {
     #[ORM\Id]
@@ -21,18 +25,32 @@ class Task
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTime $due_date = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE, nullable: true)]
+    private ?\DateTimeImmutable $dueDate = null;
 
-    #[ORM\Column]
-    private ?\DateTime $created_at = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $createdAt = null;
 
-    #[ORM\Column]
-    private ?\DateTime $updated_at = null;
+    #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
+    private ?\DateTimeImmutable $updated_at = null;
 
     #[ORM\ManyToOne(targetEntity: TaskStatus::class, inversedBy: 'tasks')]
     #[ORM\JoinColumn(name: 'task_status_id', referencedColumnName: 'id')]
     private TaskStatus $status;
+
+    #[PrePersist]
+    public function setTimestamps(): void
+    {
+        $this->createdAt = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Warsaw'));
+        $this->updated_at = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Warsaw'));
+    }
+
+    #[PreUpdate]
+    public function updateTimestamps(): void
+    {
+        $this->updated_at = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Warsaw'));
+    }
+
 
     public function getId(): ?int
     {
@@ -63,36 +81,36 @@ class Task
         return $this;
     }
 
-    public function getDueDate(): ?\DateTime
+    public function getDueDate(): ?\DateTimeImmutable
     {
-        return $this->due_date;
+        return $this->dueDate;
     }
 
-    public function setDueDate(?\DateTime $due_date): static
+    public function setDueDate(?\DateTimeImmutable $dueDate): static
     {
-        $this->due_date = $due_date;
+        $this->dueDate = $dueDate;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $created_at): static
+    public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): ?\DateTimeImmutable
     {
         return $this->updated_at;
     }
 
-    public function setUpdatedAt(\DateTime $updated_at): static
+    public function setUpdatedAt(\DateTimeImmutable $updated_at): static
     {
         $this->updated_at = $updated_at;
 

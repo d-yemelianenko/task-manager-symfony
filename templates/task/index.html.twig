@@ -4,36 +4,42 @@
 
 {% block body %}
     <h1>Task index</h1>
-
-    <table class="table">
-        <thead>
+<div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead class="table-dark">
             <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Content</th>
-                <th>Created_at</th>
-                <th>actions</th>
+                <th>Tytuł</th>
+                <th>Data stworzenia</th>
+                <th>Termin</th>
+                <th>Status</th>
+                <th>Opcje</th>
             </tr>
         </thead>
         <tbody>
         {% for task in tasks %}
             <tr>
-                <td>{{ task.id }}</td>
                 <td>{{ task.title }}</td>
-                <td>{{ task.content }}</td>
-                <td>{{ task.createdAt ? task.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                 <td>{{ task.createdAt|date('d.m.Y H:i') }}</td>
+                 <td>{{ task.dueDate|date('d.m.Y H:i') }}</td>
+                <td>
+                    <span class="badge bg-{{ task.status.slug == 'done' ? 'success' : 'warning' }}">
+                        {{ task.status.name }}
+                    </span>
+                </td>
+               
                 <td>
                     <a href="{{ path('app_task_show', {'id': task.id}) }}">show</a>
                     <a href="{{ path('app_task_edit', {'id': task.id}) }}">edit</a>
                 </td>
-            </tr>
+            </tr>  
         {% else %}
             <tr>
                 <td colspan="5">no records found</td>
             </tr>
         {% endfor %}
-        </tbody>
+         </tbody>
     </table>
+</div>
 
     <a href="{{ path('app_task_new') }}">Create new</a>
 {% endblock %}

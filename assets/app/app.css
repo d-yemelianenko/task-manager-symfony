@@ -1,0 +1,13 @@
+.datetimepicker {
+    max-width: 300px;
+}
+
+.table th {
+    background-color: #2c3e50;
+    color: white;
+}
+
+.badge {
+    font-size: 0.9em;
+    padding: 0.5em 0.75em;
+}

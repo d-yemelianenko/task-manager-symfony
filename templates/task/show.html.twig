@@ -1,34 +1,39 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Task{% endblock %}
+{% block title %}Task
+{% endblock %}
 
 {% block body %}
-    <h1>Task</h1>
+	<h1>Task</h1>
 
-    <table class="table">
-        <tbody>
+	<table class="table">
+		<tbody>
+			<tr>
+				<th>Nazwa zadania</th>
+				<td>{{ task.title }}</td>
+			</tr>
+			<tr>
+				<th>Opis zadania</th>
+				<td>{{ task.description }}</td>
+			</tr>
+			<tr>
+				<th>Status zadania</th>
+				<td>{{ task.status.name}}</td>
+			</tr>
             <tr>
-                <th>Id</th>
-                <td>{{ task.id }}</td>
-            </tr>
-            <tr>
-                <th>Title</th>
-                <td>{{ task.title }}</td>
-            </tr>
-            <tr>
-                <th>Content</th>
-                <td>{{ task.content }}</td>
-            </tr>
-            <tr>
-                <th>Created_at</th>
-                <td>{{ task.createdAt ? task.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+				<th>Data stworzenia</th>
+				<td>{{ task.createdAt ? task.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+			</tr>
+              <tr>
+				<th>Termin</th>
+				<td>{{ task.dueDate ? task.dueDate|date('Y-m-d H:i:s') : '' }}</td>
+			</tr>
+		</tbody>
+	</table>
 
-    <a href="{{ path('app_task_index') }}">back to list</a>
+	<a href="{{ path('app_task_index') }}">back to list</a>
 
-    <a href="{{ path('app_task_edit', {'id': task.id}) }}">edit</a>
+	<a href="{{ path('app_task_edit', {'id': task.id}) }}">edit</a>
 
-    {{ include('task/_delete_form.html.twig') }}
+	{{ include('task/_delete_form.html.twig') }}
 {% endblock %}
