@@ -19,6 +19,44 @@ class TaskStatus
     #[ORM\Column(length: 50, unique: true)]
     private ?string $slug = null;
 
+    #[ORM\OneToMany(mappedBy: 'status', targetEntity: Task::class)]
+    private Collection $tasks;
+
+    public function __construct()
+    {
+        $this->tasks = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Task>
+     */
+    public function getTasks(): Collection
+    {
+        return $this->tasks;
+    }
+
+    public function addTask(Task $task): self
+    {
+        if (!$this->tasks->contains($task)) {
+            $this->tasks->add($task);
+            $task->setStatus($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTask(Task $task): self
+    {
+        if ($this->tasks->removeElement($task)) {
+            // set the owning side to null (unless already changed)
+            if ($task->getStatus() === $this) {
+                $task->setStatus(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function getId(): ?int
     {
         return $this->id;

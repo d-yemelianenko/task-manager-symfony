@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\TaskRepository;
 use App\Repository\TaskStatusRepository;
+use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping as ORM;
@@ -37,6 +38,11 @@ class Task
     #[ORM\ManyToOne(targetEntity: TaskStatus::class, inversedBy: 'tasks')]
     #[ORM\JoinColumn(name: 'task_status_id', referencedColumnName: 'id')]
     private TaskStatus $status;
+
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tasks')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
+    private User $author;
+
 
     #[PrePersist]
     public function setTimestamps(): void
@@ -125,6 +131,17 @@ class Task
     {
         $this->status = $status;
 
+        return $this;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this->author;
+    }
+
+    public function setAuthor(?User $author): static
+    {
+        $this->author = $author;
         return $this;
     }
 }
