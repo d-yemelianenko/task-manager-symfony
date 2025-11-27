@@ -35,9 +35,8 @@ class Task
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private ?\DateTimeImmutable $updated_at = null;
 
-    #[ORM\ManyToOne(targetEntity: TaskStatus::class, inversedBy: 'tasks')]
-    #[ORM\JoinColumn(name: 'task_status_id', referencedColumnName: 'id')]
-    private TaskStatus $status;
+    #[ORM\ManyToOne(targetEntity: TaskStatus::class)]
+    private ?TaskStatus $taskStatus = null;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'tasks')]
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false)]
@@ -57,6 +56,36 @@ class Task
         $this->updated_at = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Warsaw'));
     }
 
+    #[ORM\ManyToOne(targetEntity: TaskPriority::class)]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?TaskPriority $priority = null;
+
+    public function getPriority(): ?TaskPriority
+    {
+        return $this->priority;
+    }
+
+    public function setPriority(?TaskPriority $priority): static
+    {
+        $this->priority = $priority;
+        return $this;
+    }
+
+    #[ORM\ManyToOne(targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    // + gettery i settery
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): static
+    {
+        $this->user = $user;
+        return $this;
+    }
 
     public function getId(): ?int
     {
@@ -122,14 +151,14 @@ class Task
 
         return $this;
     }
-    public function getStatus(): ?TaskStatus
+    public function getTaskStatus(): ?TaskStatus
     {
-        return $this->status;
+        return $this->taskStatus;
     }
 
-    public function setStatus(?TaskStatus $status): static
+    public function setTaskStatus(?TaskStatus $taskStatus): static
     {
-        $this->status = $status;
+        $this->taskStatus = $taskStatus;
 
         return $this;
     }

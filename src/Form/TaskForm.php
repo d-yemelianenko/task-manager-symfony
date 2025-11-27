@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Task;
 use App\Entity\TaskStatus;
+use App\Entity\TaskPriority;
 use App\Repository\TaskStatusRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -31,7 +32,13 @@ class TaskForm extends AbstractType
                 'label' => 'Termin wykonania',
                 'required' => false
             ])
-            ->add('status', EntityType::class, [
+            ->add('priority', EntityType::class, [
+                'class' => TaskPriority::class,
+                'choice_label' => 'name',
+                'placeholder' => 'Wybierz priorytet',
+                'required' => false
+            ])
+            ->add('taskStatus', EntityType::class, [
                 'class' => TaskStatus::class,
                 'choice_label' => 'name',
                 'attr' => ['class' => 'form-select'],

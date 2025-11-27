@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TaskStatusRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: TaskStatusRepository::class)]
@@ -19,7 +21,7 @@ class TaskStatus
     #[ORM\Column(length: 50, unique: true)]
     private ?string $slug = null;
 
-    #[ORM\OneToMany(mappedBy: 'status', targetEntity: Task::class)]
+    #[ORM\OneToMany(mappedBy: 'taskStatus', targetEntity: Task::class)]
     private Collection $tasks;
 
     public function __construct()
@@ -39,7 +41,7 @@ class TaskStatus
     {
         if (!$this->tasks->contains($task)) {
             $this->tasks->add($task);
-            $task->setStatus($this);
+            $task->setTaskStatus($this);
         }
 
         return $this;
@@ -49,8 +51,8 @@ class TaskStatus
     {
         if ($this->tasks->removeElement($task)) {
             // set the owning side to null (unless already changed)
-            if ($task->getStatus() === $this) {
-                $task->setStatus(null);
+            if ($task->getTaskStatus() === $this) {
+                $task->setTaskStatus(null);
             }
         }
 
@@ -85,4 +87,5 @@ class TaskStatus
 
         return $this;
     }
+
 }

@@ -15,9 +15,12 @@
 		</div>
 
 		<div class="mb-3">
-			{{ form_row(form.status) }}
+			{{ form_row(form.taskStatus) }}
 		</div>
-		<button class="btn">{{ button_label|default('Save') }}</button>
+		<div class="mb-3">
+			{{ form_row(form.priority) }}
+		</div>
+		<button class="btn">{{ button_label|default('Zapisz') }}</button>
 		{{ form_end(form) }}
 	</div>
 </div>
