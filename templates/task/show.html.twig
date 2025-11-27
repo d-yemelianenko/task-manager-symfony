@@ -18,7 +18,13 @@
 			</tr>
 			<tr>
 				<th>Status zadania</th>
-				<td>{{ task.taskStatus.name }}</td>
+				<td>
+					{% if task.taskStatus %}
+						{{ task.taskStatus.name }}
+					{% else %}
+						<span class="text-muted">Brak statusu</span>
+					{% endif %}
+				</td>
 			</tr>
 			<tr>
 				<th>Priorytet</th>

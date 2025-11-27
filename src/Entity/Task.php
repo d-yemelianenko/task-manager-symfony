@@ -10,6 +10,7 @@ use Doctrine\ORM\Mapping\HasLifecycleCallbacks;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\PrePersist;
 use Doctrine\ORM\Mapping\PreUpdate;
+use Doctrine\Persistence\ObjectManager;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[HasLifecycleCallbacks]
@@ -86,6 +87,16 @@ class Task
         $this->user = $user;
         return $this;
     }
+
+    public function setTaskStatusById(int $statusId, ObjectManager $manager): static
+    {
+        $status = $manager->getRepository(TaskStatus::class)->find($statusId);
+        if ($status) {
+            $this->taskStatus = $status;
+        }
+        return $this;
+    }
+
 
     public function getId(): ?int
     {

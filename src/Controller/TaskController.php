@@ -17,15 +17,27 @@ final class TaskController extends AbstractController
     #[Route(name: 'app_task_index', methods: ['GET'])]
     public function index(TaskRepository $taskRepository): Response
     {
+        if (!$this->getUser()) {
+            return $this->render('task/index.html.twig', [
+                'tasks' => [],
+                'message' => 'Zaloguj się aby zobaczyć swoje zadania'
+            ]);
+        }
+
+        $tasks = $taskRepository->findBy(['user' => $this->getUser()]);
+
         return $this->render('task/index.html.twig', [
-            'tasks' => $taskRepository->findAll(),
+            'tasks' => $tasks,
         ]);
+        
     }
 
     #[Route('/new', name: 'app_task_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $task = new Task();
+        $task->setUser($this->getUser());
+        
         $form = $this->createForm(TaskForm::class, $task);
         $form->handleRequest($request);
 
@@ -71,7 +83,7 @@ final class TaskController extends AbstractController
     #[Route('/{id}', name: 'app_task_delete', methods: ['POST'])]
     public function delete(Request $request, Task $task, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$task->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $task->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($task);
             $entityManager->flush();
         }

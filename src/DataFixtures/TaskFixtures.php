@@ -5,6 +5,7 @@ namespace App\DataFixtures;
 use App\Entity\User;
 use App\Entity\Task;
 use App\Entity\TaskPriority;
+use App\Entity\TaskStatus;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
@@ -16,23 +17,41 @@ class TaskFixtures extends Fixture
     {
         $faker = Factory::create('pl_PL');
 
-        $users = $manager->getRepository(User::class)->findAll();
+        $userRepository = $manager->getRepository(User::class);
+        $taskStatusRepository = $manager->getRepository(TaskStatus::class); // Dodaj repozytorium dla TaskStatus
         $priorities = $manager->getRepository(TaskPriority::class)->findAll();
 
+        $users = $userRepository->findAll();
+        $taskStatuses = $taskStatusRepository->findAll(); // Pobierz wszystkie statusy
+
+        if (empty($users)) {
+            $user = new User();
+            $user->setEmail('admin@example.com');
+            $user->setPassword('$2y$13$...'); // zahashowane hasło
+            $manager->persist($user);
+            $manager->flush();
+            $users = [$user];
+        }
         for ($i = 0; $i < 20; $i++) {
             $task = new Task();
             $task->setTitle($faker->sentence(4));
             $task->setDescription($faker->paragraph(3));
-            
-            $randomUser = $faker->randomElement($users);
-            $task->setUser($randomUser);
+            $task->setUser($users[array_rand($users)]);
 
-            // KONWERSJA DateTime → DateTimeImmutable
-            $dueDate = $faker->dateTimeBetween('now', '+30 days');
-            $task->setDueDate(\DateTimeImmutable::createFromMutable($dueDate));
+
+            $randomStatus = $taskStatuses[array_rand($taskStatuses)];
+            $task->setTaskStatusById($randomStatus->getId(), $manager);
 
             $createdAt = $faker->dateTimeBetween('-30 days', 'now');
             $task->setCreatedAt(\DateTimeImmutable::createFromMutable($createdAt));
+
+
+            $dueDate = $faker->dateTimeBetween(
+                $createdAt->modify('+1 hour'),
+                $createdAt->modify('+30 days')
+            );
+            $task->setDueDate(\DateTimeImmutable::createFromMutable($dueDate));
+
 
 
             if ($faker->boolean(50) && count($priorities) > 0) {
