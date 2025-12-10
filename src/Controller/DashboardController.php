@@ -15,6 +15,7 @@ final class DashboardController extends AbstractController
     {
         $user = $this->getUser();
 
+
         $totalTasks = $taskRepository->count(['user' => $user]);
 
         $completedTasks = $taskRepository->count([
@@ -35,7 +36,7 @@ final class DashboardController extends AbstractController
             ->getQuery()
             ->getSingleScalarResult();
 
-        return $this->render('dashboard/index.html.twig', [
+        return $this->render('dashboard/dashboard.html.twig', [
             'total_tasks' => $totalTasks,
             'completed_tasks' => $completedTasks,
             'today_tasks' => $todayTasks,
