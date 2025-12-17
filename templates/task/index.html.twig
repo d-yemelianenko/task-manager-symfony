@@ -32,7 +32,13 @@
 									<span class="badge {% if task.taskStatus.name == 'Done' %}bg-success 	{% elseif task.taskStatus.name == 'In Progress' %}bg-warning {% else %}bg-secondary{% endif %}">
 										{{ task.taskStatus.name }}
 									</span>
-									<span class="badge bg-info ms-1">{{ task.priority.name }}</span>
+									<td>
+										{% if task.priority and task.priority.name %}
+											<span class="badge bg-info ms-1">{{ task.priority.name }}</span>
+										{% else %}
+											<span class="badge bg-secondary ms-1">No priority</span>
+										{% endif %}
+									</td>
 								</div>
 
 								<p class="small mb-1">
@@ -61,55 +67,59 @@
 			</div>
 		</div>
 
-		
-			<div class="table-responsive">
-				<table class="table table-striped">
-					<thead class="table-dark">
+
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<thead class="table-dark">
+					<tr>
+						<th>Tytuł</th>
+						<th>Status</th>
+						<th>Priorytet</th>
+						<th>Termin</th>
+						<th>Utworzone</th>
+						<th class="text-end">Akcje</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for task in tasks %}
 						<tr>
-							<th>Tytuł</th>
-							<th>Status</th>
-							<th>Priorytet</th>
-							<th>Termin</th>
-							<th>Utworzone</th>
-							<th class="text-end">Akcje</th>
+							<td>
+								<strong>{{ task.title }}</strong>
+								{# {% if task.description %}
+																										<br><small class="text-muted">{{ task.description}}</small>
+																									{% endif %} #}
+							</td>
+							<td>
+								<span class="badge	{% if task.taskStatus.name == 'Done' %}bg-success {% elseif task.taskStatus.name == 'In Progress' %}bg-warning {% else %}bg-secondary{% endif %}">
+									{{ task.taskStatus.name }}
+								</span>
+							</td>
+							<td>
+								{% if task.priority and task.priority.name %}
+									<span class="badge bg-info ms-1">{{ task.priority.name }}</span>
+								{% else %}
+									<span class="badge bg-secondary ms-1">No priority</span>
+								{% endif %}
+							</td>
+							<td>{{ task.dueDate|date('Y-m-d') }}</td>
+							<td>{{ task.createdAt|date('Y-m-d') }}</td>
+							<td class="text-end">
+								<div class="btn-group btn-group-sm">
+									<a href="{{ path('app_task_show', {'id': task.id}) }}" class="btn btn-outline-primary">Podgląd</a>
+									<a href="{{ path('app_task_edit', {'id': task.id}) }}" class="btn btn-outline-secondary">Edytuj</a>
+								</div>
+							</td>
 						</tr>
-					</thead>
-					<tbody>
-						{% for task in tasks %}
-							<tr>
-								<td>
-									<strong>{{ task.title }}</strong>
-									{# {% if task.description %}
-										<br><small class="text-muted">{{ task.description}}</small>
-									{% endif %} #}
-								</td>
-								<td>
-									<span class="badge	{% if task.taskStatus.name == 'Done' %}bg-success {% elseif task.taskStatus.name == 'In Progress' %}bg-warning {% else %}bg-secondary{% endif %}">
-										{{ task.taskStatus.name }}
-									</span>
-								</td>
-								<td>
-									<span class="badge bg-info">{{ task.priority.name }}</span>
-								</td>
-								<td>{{ task.dueDate|date('Y-m-d') }}</td>
-								<td>{{ task.createdAt|date('Y-m-d') }}</td>
-								<td class="text-end">
-									<div class="btn-group btn-group-sm">
-										<a href="{{ path('app_task_show', {'id': task.id}) }}" class="btn btn-outline-primary">Podgląd</a>
-										<a href="{{ path('app_task_edit', {'id': task.id}) }}" class="btn btn-outline-secondary">Edytuj</a>
-									</div>
-								</td>
-							</tr>
-						{% else %}
-							<tr>
-								<td colspan="7" class="text-center text-muted py-4">
-									Brak zadań do wyświetlenia.
-								</td>
-							</tr>
-						{% endfor %}
-					</tbody>
-				</table>
-			</div>
+					{% else %}
+						<tr>
+							<td colspan="7" class="text-center text-muted py-4">
+								Brak zadań do wyświetlenia.
+							</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
 		</div>
-	
+	</div>
+
 {% endblock %}

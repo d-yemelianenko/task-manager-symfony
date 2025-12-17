@@ -44,7 +44,7 @@ COPY composer.json composer.lock ./
 RUN composer install --no-interaction --optimize-autoloader --no-scripts
 
 # Po composer install, przed COPY . .
-COPY .env.test .env
+#COPY .env.test .env
 # Copy application code
 COPY . .
 

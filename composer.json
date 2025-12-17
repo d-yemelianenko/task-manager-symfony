@@ -19,7 +19,6 @@
         "symfony/form": "6.4.*",
         "symfony/framework-bundle": "6.4.*",
         "symfony/mailer": "6.4.*",
-        "symfony/maker-bundle": "^1.63",
         "symfony/runtime": "6.4.*",
         "symfony/security-bundle": "6.4.*",
         "symfony/twig-bundle": "6.4.*",
@@ -81,6 +80,7 @@
         "phpunit/phpunit": "*",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",
+        "symfony/maker-bundle": "^1.65",
         "symfony/phpunit-bridge": "^7.2"
     }
 }
