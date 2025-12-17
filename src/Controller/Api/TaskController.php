@@ -11,14 +11,13 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class TaskController extends AbstractController
 {
-    #[Route('/api/task',name: 'api_task', methods: ['GET'])]
+    #[Route('/api/task', name: 'api_task', methods: ['GET'])]
     public function index(): Response
     {
         $data = [
-            'id'=> '1',
-            'name'=>'Daria'
+            'id' => '1',
+            'name' => 'Daria'
         ];
         return $this->json($data);
     }
-
 }

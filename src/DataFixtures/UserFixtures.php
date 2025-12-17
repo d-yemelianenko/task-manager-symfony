@@ -11,29 +11,19 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserFixtures extends Fixture
 {
     public function __construct(
-        private UserPasswordHasherInterface $passwordHasher
+        private UserPasswordHasherInterface $passwordHasher,
+        private \App\Repository\UserRepository $userRepository
     ) {}
 
     public function load(ObjectManager $manager): void
     {
-        $faker = Factory::create('pl_PL');
+        $existingUser = $this->userRepository->findOneBy(['email' => 'admin@example.com']);
 
-        // Tworzymy admin user
-        $admin = new User();
-        $admin->setEmail('admin@example.com');
-        $admin->setRoles(['ROLE_ADMIN']);
-        $admin->setPassword($this->passwordHasher->hashPassword($admin, 'password'));
-        $manager->persist($admin);
-        $this->addReference('user_admin', $admin);
-
-        // Tworzymy kilka zwykłych userów
-        for ($i = 0; $i < 5; $i++) {
+        if (!$existingUser) {
             $user = new User();
-            $user->setEmail($faker->email());
-            $user->setRoles(['ROLE_USER']);
-            $user->setPassword($this->passwordHasher->hashPassword($user, 'password'));
+            $user->setEmail('admin@example.com');
+            $user->setPassword('$2y$13$...');
             $manager->persist($user);
-            $this->addReference('user_' . $i, $user);
         }
 
         $manager->flush();

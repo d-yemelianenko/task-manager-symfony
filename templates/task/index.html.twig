@@ -61,7 +61,7 @@
 			</div>
 		</div>
 
-		<div class="d-none d-lg-block">
+		
 			<div class="table-responsive">
 				<table class="table table-striped">
 					<thead class="table-dark">
@@ -79,9 +79,9 @@
 							<tr>
 								<td>
 									<strong>{{ task.title }}</strong>
-									{% if task.description %}
+									{# {% if task.description %}
 										<br><small class="text-muted">{{ task.description}}</small>
-									{% endif %}
+									{% endif %} #}
 								</td>
 								<td>
 									<span class="badge	{% if task.taskStatus.name == 'Done' %}bg-success {% elseif task.taskStatus.name == 'In Progress' %}bg-warning {% else %}bg-secondary{% endif %}">
@@ -111,5 +111,5 @@
 				</table>
 			</div>
 		</div>
-	</div>
+	
 {% endblock %}
