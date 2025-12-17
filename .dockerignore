@@ -9,7 +9,6 @@ node_modules/
 Dockerfile
 docker-compose.yml
 docker-compose.override.yml
-.env
 .gitignore
 README.md
 tests/

@@ -43,6 +43,8 @@ COPY composer.json composer.lock ./
 # Install dependencies
 RUN composer install --no-interaction --optimize-autoloader --no-scripts
 
+# Po composer install, przed COPY . .
+COPY .env.test .env
 # Copy application code
 COPY . .
 
@@ -52,5 +54,12 @@ RUN mkdir -p var/cache var/log var/sessions \
     && chmod -R 755 var
 
 EXPOSE 80
+
+# Add health check (sprawdza czy aplikacja działa)
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost/health 2>/dev/null | grep -q '"status":"healthy"' || exit 1
+
+# Warm up Symfony cache for better performance
+RUN composer run-script post-install-cmd --no-interaction || true
 
 CMD ["apache2-foreground"]

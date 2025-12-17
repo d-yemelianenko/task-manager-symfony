@@ -1,0 +1,64 @@
+name: "CI Pipeline"
+
+on:
+  push:
+    branches:
+      - "feature/docker-setup"
+      - "main"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install docker-compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Build and start containers
+        run: |
+          docker-compose -f docker-compose.ci.yml -p task_manager_ci build 
+          docker-compose -f docker-compose.ci.yml -p task_manager_ci up -d
+          sleep 20  # Poczekaj 15 sekund na uruchomienie aplikacji
+
+      - name: Check containers status
+        run: |
+          docker-compose -f docker-compose.ci.yml ps
+          echo ""
+          docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
+      - name: Health check (3 attempts)
+        run: |
+          echo "🌐 Health check..."
+
+          for attempt in 1 2 3; do
+            echo "🔍 Attempt $attempt/3"
+            
+            if curl -s http://localhost:8080/health | grep -q '"status":"healthy"'; then
+              echo "✅ Health check PASSED"
+              exit 0
+            fi
+            
+            if [ $attempt -lt 3 ]; then
+              echo "⏱️  Waiting 20 seconds..."
+              sleep 20
+            fi
+          done
+
+          echo "❌ Health check failed after 3 attempts"
+          exit 1
+
+      - name: Debug on failure
+        if: failure()
+        run: |
+          echo "DEBUG INFORMATION:"
+          docker-compose -f docker-compose.ci.yml logs --tail=30
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker-compose -f docker-compose.ci.yml -p task_manager_ci down -v
