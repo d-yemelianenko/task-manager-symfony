@@ -26,4 +26,15 @@ class TaskRepository extends ServiceEntityRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    public function findOneByIdAndUser(int $id, User $user): ?Task
+    {
+        return $this->createQueryBuilder('t')
+            ->andWhere('t.id = :id')
+            ->andWhere('t.user = :user')
+            ->setParameter('id', $id)
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
