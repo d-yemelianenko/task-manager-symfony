@@ -6,14 +6,30 @@ use App\Entity\Task;
 use App\Form\TaskForm;
 use App\Repository\TaskRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Gemini\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
+
 #[Route('/task')]
 final class TaskController extends AbstractController
 {
+    #[Route('/test-gemini', name: 'test_gemini')]
+    public function testGemini(): Response
+    {
+        $client = \Gemini::client($_ENV['GEMINI_API_KEY']);
+
+        // Darmowy model 2.5 Flash
+        $result = $client->generativeModel('gemini-2.5-flash')->generateContent(
+            'Wymyśl 3 nazwy dla zadania "Dokończyć raport sprzedaży"'
+        );
+
+        dd($result->candidates[0]->content->parts[0]->text);
+    }
+
+
     #[Route(name: 'app_task_index', methods: ['GET'])]
     public function index(TaskRepository $taskRepository): Response
     {
@@ -29,7 +45,6 @@ final class TaskController extends AbstractController
         return $this->render('task/index.html.twig', [
             'tasks' => $tasks,
         ]);
-        
     }
 
     #[Route('/new', name: 'app_task_new', methods: ['GET', 'POST'])]
@@ -37,7 +52,7 @@ final class TaskController extends AbstractController
     {
         $task = new Task();
         $task->setUser($this->getUser());
-        
+
         $form = $this->createForm(TaskForm::class, $task);
         $form->handleRequest($request);
 
