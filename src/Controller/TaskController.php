@@ -10,25 +10,25 @@ use Gemini\Client;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\AiSuggestionService;
+
 
 
 #[Route('/task')]
 final class TaskController extends AbstractController
 {
-    #[Route('/test-gemini', name: 'test_gemini')]
-    public function testGemini(): Response
+    #[Route('/api/suggest-title', name: 'api_suggest_title', methods: ['POST'])]
+    public function suggestTitle(Request $request, AiSuggestionService $aiService): JsonResponse
     {
-        $client = \Gemini::client($_ENV['GEMINI_API_KEY']);
+        $data = json_decode($request->getContent(), true);
+        $description = $data['description'] ?? '';
 
-        // Darmowy model 2.5 Flash
-        $result = $client->generativeModel('gemini-2.5-flash')->generateContent(
-            'Wymyśl 3 nazwy dla zadania "Dokończyć raport sprzedaży"'
-        );
+        $suggestions = $aiService->suggest(description: $description);
 
-        dd($result->candidates[0]->content->parts[0]->text);
+        return $this->json(['suggestions' => $suggestions]);
     }
-
 
     #[Route(name: 'app_task_index', methods: ['GET'])]
     public function index(TaskRepository $taskRepository): Response

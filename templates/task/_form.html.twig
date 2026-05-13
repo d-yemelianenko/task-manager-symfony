@@ -1,7 +1,7 @@
 <div class="card mb-4">
 	<div class="card-body">
 		{{ form_start(form) }}
-		{# {{ form_widget(form) }} #}
+		
 		<div class="mb-3">
 			{{ form_row(form.title) }}
 		</div>
@@ -20,7 +20,66 @@
 		<div class="mb-3">
 			{{ form_row(form.priority) }}
 		</div>
+		<button type="button" id="suggest-title-btn" class="btn btn-outline-info">
+            Podpowiedz
+        </button>
 		<button class="btn">{{ button_label|default('Zapisz') }}</button>
 		{{ form_end(form) }}
 	</div>
 </div>
+
+<script>
+document.getElementById('suggest-title-btn').addEventListener('click', async function() {
+    const description = document.getElementById('task_form_description').value;
+    
+    if (!description.trim()) {
+        alert('Najpierw wpisz opis zadania!');
+        return;
+    }
+    
+    this.disabled = true;
+    this.innerHTML = 'Myślę...';
+    
+    try {
+        const response = await fetch('/task/api/suggest-title', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({description: description})
+        });
+        
+        const data = await response.json();
+        
+        if (data.suggestions && data.suggestions.length > 0) {
+            
+            const oldBox = document.getElementById('suggestions-box');
+            if (oldBox) oldBox.remove();
+            
+            
+            const box = document.createElement('div');
+            box.id = 'suggestions-box';
+            box.style.marginTop = '8px';
+            
+            let html = '<small class="text-muted">Wybierz tytuł:</small><br>';
+            data.suggestions.forEach(title => {
+                html += `<button type="button" class="btn btn-sm btn-outline-secondary m-1 pick-title">${title}</button>`;
+            });
+            
+            box.innerHTML = html;
+            document.getElementById('task_form_title').parentNode.appendChild(box);
+            
+            
+            box.querySelectorAll('.pick-title').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.getElementById('task_form_title').value = this.textContent;
+                    box.remove();
+                });
+            });
+        }
+    } catch (error) {
+        alert('Błąd: ' + error.message);
+    } finally {
+        this.disabled = false;
+        this.innerHTML = 'Podpowiedz';
+    }
+});
+</script>
